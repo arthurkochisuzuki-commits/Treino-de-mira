@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino de Mira - Valorant Aim Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fontes modernas gamer e Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js para renderização 3D FPS estilo The Range do Valorant -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app" class="app-container">
+
+        <!-- Barra Superior de Navegação -->
+        <header class="main-header">
+            <div class="logo-area">
+                <span class="logo-tag">VAL // AIM</span>
+                <h1 class="logo-title">TREINO DE MIRA</h1>
+                <span class="badge-version">PRO RANGE</span>
+            </div>
+
+            <div class="header-stats-quick">
+                <div class="quick-pill">
+                    <span class="pill-label">SENSIBILIDADE</span>
+                    <span class="pill-val" id="headerSensDisplay">0.40</span>
+                </div>
+                <div class="quick-pill">
+                    <span class="pill-label">eDPI</span>
+                    <span class="pill-val" id="headerEdpiDisplay">320</span>
+                </div>
+            </div>
+
+            <nav class="header-actions">
+                <button id="btnOpenSettings" class="btn-icon-text" title="Configurações de Sensibilidade e Mira">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
+                    </svg>
+                    <span>CONFIGURAÇÕES</span>
+                </button>
+                <button id="btnOpenHistory" class="btn-icon-text" title="Ver Histórico de Treinos">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm.5-9.5H11v5l4.25 2.52.77-1.28-3.52-2.09V7.5z"/>
+                    </svg>
+                    <span>HISTÓRICO</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- MENU PRINCIPAL / LOBBY DE ANÁLISE -->
+        <main id="lobbyScreen" class="lobby-container">
+            <div class="lobby-card">
+                <div class="card-hero">
+                    <div class="hero-badge">PROTOCOLO DE CALIBRAÇÃO</div>
+                    <h2 class="hero-title">ANALISADOR DE PRECISÃO & MIRA</h2>
+                    <p class="hero-desc">
+                        Simulação autêntica de física e sensibilidade do <strong>VALORANT</strong>.
+                        Selecione a duração do teste e o modo de treino para iniciar a medição completa da sua taxa de acerto, tempo de reação e consistência.
+                    </p>
+                </div>
+
+                <!-- Configuração Rápida de Treino -->
+                <div class="training-options-grid">
+                    
+                    <!-- Duração da Análise -->
+                    <div class="option-group">
+                        <label class="group-title">
+                            <span class="icon">⏱️</span> TEMPO DA ANÁLISE
+                        </label>
+                        <div class="time-selector-buttons" id="timeSelector">
+                            <button class="btn-choice" data-time="15">15s <span>Rápido</span></button>
+                            <button class="btn-choice active" data-time="30">30s <span>Padrão</span></button>
+                            <button class="btn-choice" data-time="60">60s <span>Competitivo</span></button>
+                            <button class="btn-choice" data-time="90">90s <span>Resistência</span></button>
+                            <button class="btn-choice" data-time="custom">Outro <span>Manual</span></button>
+                        </div>
+                        <div id="customTimeWrapper" class="custom-time-input hidden">
+                            <label for="customTimeInput">Duração Personalizada (segundos):</label>
+                            <input type="number" id="customTimeInput" min="5" max="300" value="45">
+                        </div>
+                    </div>
+
+                    <!-- Modo de Treino -->
+                    <div class="option-group">
+                        <label class="group-title">
+                            <span class="icon">🎯</span> MODO DE ANÁLISE
+                        </label>
+                        <div class="mode-selector-grid" id="modeSelector">
+                            <div class="mode-card active" data-mode="gridshot">
+                                <div class="mode-badge">POPULAR</div>
+                                <div class="mode-name">GRIDSHOT (FLICK)</div>
+                                <div class="mode-desc">3 alvos simultâneos. Destrua um e outro surge instantaneamente. Foco em reflexo e mira rápida.</div>
+                            </div>
+                            <div class="mode-card" data-mode="spidershot">
+                                <div class="mode-badge">PRECISÃO</div>
+                                <div class="mode-name">MICRO-ADJUST</div>
+                                <div class="mode-desc">1 alvo por vez com tempo limite. Treina precisão cirúrgica de primeiro tiro (One-Tap).</div>
+                            </div>
+                            <div class="mode-card" data-mode="tracking">
+                                <div class="mode-badge">CONTROLE</div>
+                                <div class="mode-name">RASTREIO (TRACKING)</div>
+                                <div class="mode-desc">Alvos que se movimentam de forma fluida para treinar controle de spray e micro-rastreio.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Botão de Iniciar Análise em Destaque -->
+                <div class="lobby-cta-row">
+                    <button id="btnStartTraining" class="btn-primary-large">
+                        <span class="btn-glitch-effect"></span>
+                        <span class="btn-text">INICIAR ANÁLISE</span>
+                        <span class="btn-subtext">Clique para calibrar e começar o treino</span>
+                    </button>
+                </div>
+
+                <!-- Rodapé informativo de Sensibilidade Atual -->
+                <div class="lobby-sens-summary">
+                    <span>Sensibilidade Valorant configurada: <strong id="lobbySensVal">0.40</strong> (DPI <strong id="lobbyDpiVal">800</strong> = <strong id="lobbyEdpiVal">320 eDPI</strong>)</span>
+                    <button id="btnQuickEditSens" class="link-btn">Ajustar sensibilidade</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- TELA DO JOGO / ARENA DE TREINO -->
+        <div id="gameArena" class="game-arena hidden">
+            <!-- Canvas 3D (Three.js) -->
+            <div id="threeContainer" class="three-container"></div>
+
+            <!-- Crosshair customizável centralizado -->
+            <div id="crosshairElement" class="custom-crosshair">
+                <div class="crosshair-center-dot"></div>
+                <div class="ch-line ch-top"></div>
+                <div class="ch-line ch-bottom"></div>
+                <div class="ch-line ch-left"></div>
+                <div class="ch-line ch-right"></div>
+            </div>
+
+            <!-- Hitmarker (Feedback visual de acerto) -->
+            <div id="hitMarker" class="hit-marker"></div>
+
+            <!-- HUD de Jogo em Tempo Real -->
+            <div class="game-hud">
+                <div class="hud-top-bar">
+                    <div class="hud-box timer-box">
+                        <span class="hud-label">TEMPO RESTANTE</span>
+                        <span class="hud-value timer-text" id="hudTimer">30.0s</span>
+                        <div class="hud-progress-bar">
+                            <div class="hud-progress-fill" id="hudProgressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="hud-box accuracy-box">
+                        <span class="hud-label">TAXA DE ACERTO</span>
+                        <span class="hud-value highlight-cyan" id="hudAccuracy">100.0%</span>
+                    </div>
+
+                    <div class="hud-box score-box">
+                        <span class="hud-label">PONTUAÇÃO</span>
+                        <span class="hud-value" id="hudScore">0</span>
+                    </div>
+
+                    <div class="hud-box hits-box">
+                        <span class="hud-label">ACERTOS / TIROS</span>
+                        <span class="hud-value">
+                            <span class="green" id="hudHits">0</span> / <span id="hudShots">0</span>
+                        </span>
+                    </div>
+
+                    <div class="hud-box combo-box">
+                        <span class="hud-label">STREAK</span>
+                        <span class="hud-value highlight-red" id="hudStreak">0x</span>
+                    </div>
+                </div>
+
+                <div class="hud-instruction">
+                    <span>Pressione <kbd>ESC</kbd> para pausar ou sair</span>
+                </div>
+            </div>
+
+            <!-- Overlay de Contagem Regressiva 3, 2, 1, GO! -->
+            <div id="countdownOverlay" class="countdown-overlay hidden">
+                <div class="countdown-number" id="countdownNumber">3</div>
+                <div class="countdown-tip">Prepare a mira no centro...</div>
+            </div>
+
+            <!-- Overlay de Click to Focus / Lock Pointer -->
+            <div id="clickToLockOverlay" class="click-to-lock-overlay hidden">
+                <div class="lock-card">
+                    <div class="lock-icon">🎯</div>
+                    <h2>CLIQUE NA TELA PARA MIRAR</h2>
+                    <p>O cursor será travado no centro para simular o movimento do mouse no <strong>VALORANT</strong>.</p>
+                    <button class="btn-primary" id="btnLockPointer">BLOQUEAR MOUSE & CONTINUAR</button>
+                </div>
+            </div>
+
+            <!-- Overlay de Pause -->
+            <div id="pauseOverlay" class="pause-overlay hidden">
+                <div class="pause-card">
+                    <h2>TREINO PAUSADO</h2>
+                    <p>O cronômetro está interrompido.</p>
+                    <div class="pause-actions">
+                        <button id="btnResumeGame" class="btn-primary">CONTINUAR</button>
+                        <button id="btnRestartGame" class="btn-secondary">REINICIAR</button>
+                        <button id="btnQuitToLobby" class="btn-danger">VOLTAR AO MENU</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE RELATÓRIO DE ANÁLISE / RESULTADOS -->
+        <div id="resultsModal" class="modal-overlay hidden">
+            <div class="modal-card results-card">
+                <div class="results-header">
+                    <div class="results-tag">ANÁLISE DE DESEMPENHO CONCLUÍDA</div>
+                    <h2 class="results-title">RELATÓRIO DE PRECISÃO</h2>
+                    <span class="session-mode-badge" id="resModeBadge">GRIDSHOT (FLICK) - 30s</span>
+                </div>
+
+                <!-- Destaque Principal: Taxa de Acerto e Patente -->
+                <div class="results-hero-grid">
+                    <!-- Taxa de Acerto -->
+                    <div class="hero-stat-card accuracy-card">
+                        <span class="stat-subtitle">TAXA DE ACERTO</span>
+                        <div class="stat-huge-value">
+                            <span id="resAccuracy">0.0</span><small>%</small>
+                        </div>
+                        <div class="accuracy-status" id="resAccuracyStatus">Consistência Excepcional</div>
+                    </div>
+
+                    <!-- Patente / Avaliação Valorant -->
+                    <div class="hero-stat-card rank-card">
+                        <span class="stat-subtitle">CLASSIFICAÇÃO ESTIMADA</span>
+                        <div class="rank-badge-display" id="resRankBadge">
+                            <span class="rank-name" id="resRankName">DIAMANTE II</span>
+                        </div>
+                        <div class="rank-description" id="resRankDesc">Excelente tempo de resposta e bom aproveitamento de tiros.</div>
+                    </div>
+                </div>
+
+                <!-- Grade com Métricas Detalhadas -->
+                <div class="results-metrics-grid">
+                    <div class="metric-item">
+                        <span class="m-label">Alvos Acertados</span>
+                        <span class="m-value green" id="resHits">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Tiros Errados</span>
+                        <span class="m-value red" id="resMisses">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Total de Disparos</span>
+                        <span class="m-value" id="resTotalShots">0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Tempo Médio de Reação</span>
+                        <span class="m-value" id="resAvgReaction">0 ms</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Tiros por Segundo (DPS)</span>
+                        <span class="m-value" id="resShotsPerSec">0.0</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Maior Sequência (Streak)</span>
+                        <span class="m-value highlight-cyan" id="resBestStreak">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="m-label">Pontuação Total</span>
+                        <span class="m-value highlight-yellow" id="resFinalScore">0</span>
+                    </div>
+                </div>
+
+                <!-- Dica do Treinador -->
+                <div class="coach-tip-box" id="coachTipBox">
+                    <span class="coach-icon">💡</span>
+                    <div class="coach-text">
+                        <strong>Dica do Treinador:</strong>
+                        <p id="resCoachTip">Mantenha a sensibilidade fixa para construir memória muscular. Treine sempre antes das partidas ranqueadas.</p>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="results-actions">
+                    <button id="btnRetryTraining" class="btn-primary">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        <span>TREINAR NOVAMENTE</span>
+                    </button>
+                    <button id="btnSettingsFromResults" class="btn-secondary">
+                        <span>AJUSTAR SENSIBILIDADE</span>
+                    </button>
+                    <button id="btnBackToLobby" class="btn-outline">
+                        <span>MENU PRINCIPAL</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE CONFIGURAÇÕES (SENSIBILIDADE VALORANT, MIRA, ÁUDIO) -->
+        <div id="settingsModal" class="modal-overlay hidden">
+            <div class="modal-card settings-card">
+                <div class="settings-modal-header">
+                    <h2>CONFIGURAÇÕES DE SENSIBILIDADE & MIRA</h2>
+                    <button id="btnCloseSettings" class="btn-close">&times;</button>
+                </div>
+
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="tabSens">Sensibilidade (Valorant)</button>
+                    <button class="tab-btn" data-tab="tabCrosshair">Customizar Mira</button>
+                    <button class="tab-btn" data-tab="tabAudioTarget">Áudio & Alvos</button>
+                    <button class="tab-btn" data-tab="tabConverter">Conversor de Jogos</button>
+                </div>
+
+                <div class="settings-content">
+                    <!-- ABA 1: SENSIBILIDADE VALORANT -->
+                    <div class="tab-panel active" id="tabSens">
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="sensSlider">Sensibilidade no Valorant</label>
+                                <span class="setting-desc">Sensibilidade idêntica à opção do menu interno do Valorant (multiplicador de 0.07 graus por count).</span>
+                            </div>
+                            <div class="setting-controls">
+                                <input type="range" id="sensSlider" min="0.05" max="2.00" step="0.01" value="0.40">
+                                <input type="number" id="sensInput" min="0.05" max="5.00" step="0.01" value="0.40" class="num-box">
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="dpiSelect">DPI do Mouse</label>
+                                <span class="setting-desc">DPI configurado no software do seu mouse (Logitech G Hub, Razer Synapse, etc).</span>
+                            </div>
+                            <div class="setting-controls">
+                                <select id="dpiSelect" class="select-box">
+                                    <option value="400">400 DPI</option>
+                                    <option value="800" selected>800 DPI</option>
+                                    <option value="1200">1200 DPI</option>
+                                    <option value="1600">1600 DPI</option>
+                                    <option value="3200">3200 DPI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Card de eDPI e Análise -->
+                        <div class="edpi-card">
+                            <div class="edpi-main">
+                                <span class="edpi-title">Seu eDPI Atual:</span>
+                                <span class="edpi-number" id="settingEdpi">320</span>
+                            </div>
+                            <p class="edpi-hint" id="edpiCategoryText">
+                                <strong>Faixa Equilibrada (Média dos Profissionais):</strong> 200 a 350 eDPI. Excelente balanço entre flicks precisos de Vandal e facilidade para virar 180°.
+                            </p>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <label for="invertYCheck">Inverter Eixo Y</label>
+                                <span class="setting-desc">Inverte o movimento vertical do mouse (cima/baixo).</span>
+                            </div>
+                            <div class="setting-controls">
+                                <label class="switch">
+                                    <input type="checkbox" id="invertYCheck">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ABA 2: MIRA (CROSSHAIR) -->
+                    <div class="tab-panel" id="tabCrosshair">
+                        <div class="crosshair-editor-grid">
+                            <!-- Controles da Mira -->
+                            <div class="crosshair-controls">
+                                <div class="setting-row">
+                                    <label>Cor da Mira</label>
+                                    <div class="color-presets" id="chColorPresets">
+                                        <button class="color-btn active" data-color="#00ffff" style="background: #00ffff;" title="Ciano"></button>
+                                        <button class="color-btn" data-color="#00ff00" style="background: #00ff00;" title="Verde"></button>
+                                        <button class="color-btn" data-color="#ffffff" style="background: #ffffff;" title="Branco"></button>
+                                        <button class="color-btn" data-color="#ff4655" style="background: #ff4655;" title="Vermelho"></button>
+                                        <button class="color-btn" data-color="#ffff00" style="background: #ffff00;" title="Amarelo"></button>
+                                        <button class="color-btn" data-color="#ff00ff" style="background: #ff00ff;" title="Rosa"></button>
+                                    </div>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label for="chLength">Comprimento das Linhas</label>
+                                    <input type="range" id="chLength" min="1" max="20" value="6">
+                                    <span class="val-tag" id="chLengthVal">6</span>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label for="chThickness">Espessura das Linhas</label>
+                                    <input type="range" id="chThickness" min="1" max="8" value="2">
+                                    <span class="val-tag" id="chThicknessVal">2</span>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label for="chGap">Espaço / Abertura (Gap)</label>
+                                    <input type="range" id="chGap" min="0" max="20" value="4">
+                                    <span class="val-tag" id="chGapVal">4</span>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label for="chCenterDot">Ponto Central (Dot)</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="chCenterDot">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-row">
+                                    <label for="chOutline">Contorno Preto</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="chOutline" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Preview da Mira -->
+                            <div class="crosshair-preview-box">
+                                <div class="preview-title">PRÉ-VISUALIZAÇÃO</div>
+                                <div class="preview-stage" id="crosshairPreviewStage">
+                                    <div class="target-dummy"></div>
+                                    <div id="previewCrosshair" class="custom-crosshair static">
+                                        <div class="crosshair-center-dot"></div>
+                                        <div class="ch-line ch-top"></div>
+                                        <div class="ch-line ch-bottom"></div>
+                                        <div class="ch-line ch-left"></div>
+                                        <div class="ch-line ch-right"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ABA 3: ÁUDIO & ALVOS -->
+                    <div class="tab-panel" id="tabAudioTarget">
+                        <div class="setting-row">
+                            <label for="masterVolSlider">Volume Geral</label>
+                            <input type="range" id="masterVolSlider" min="0" max="1" step="0.05" value="0.7">
+                            <span class="val-tag" id="masterVolVal">70%</span>
+                        </div>
+
+                        <div class="setting-row">
+                            <label for="sfxVolSlider">Volume dos Efeitos (Tiros / Ding)</label>
+                            <input type="range" id="sfxVolSlider" min="0" max="1" step="0.05" value="0.8">
+                            <span class="val-tag" id="sfxVolVal">80%</span>
+                        </div>
+
+                        <div class="setting-row">
+                            <label for="targetColorSelect">Cor dos Alvos 3D</label>
+                            <select id="targetColorSelect" class="select-box">
+                                <option value="#ff4655" selected>Vermelho Valorant</option>
+                                <option value="#00f5d4">Ciano Neon</option>
+                                <option value="#ffff00">Amarelo Destaque</option>
+                                <option value="#9d4edd">Roxo Neon</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-row">
+                            <label for="targetSizeSelect">Tamanho dos Alvos</label>
+                            <select id="targetSizeSelect" class="select-box">
+                                <option value="small">Pequeno (Difícil / Cabeça)</option>
+                                <option value="medium" selected>Médio (Padrão)</option>
+                                <option value="large">Grande (Fácil / Aquecimento)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ABA 4: CONVERSOR DE JOGOS -->
+                    <div class="tab-panel" id="tabConverter">
+                        <div class="converter-box">
+                            <p class="converter-desc">
+                                Joga outros jogos e quer trazer exatamente a mesma memória muscular para o Valorant?
+                                Digite sua sensibilidade abaixo:
+                            </p>
+
+                            <div class="converter-inputs">
+                                <div class="conv-col">
+                                    <label for="convGameSelect">Jogo de Origem</label>
+                                    <select id="convGameSelect" class="select-box">
+                                        <option value="cs2">Counter-Strike 2 / CS:GO</option>
+                                        <option value="apex">Apex Legends</option>
+                                        <option value="ow2">Overwatch 2</option>
+                                        <option value="fortnite">Fortnite</option>
+                                        <option value="r6">Rainbow Six Siege</option>
+                                    </select>
+                                </div>
+
+                                <div class="conv-col">
+                                    <label for="convSourceSens">Sua Sensibilidade no Jogo</label>
+                                    <input type="number" id="convSourceSens" step="0.01" value="1.27" class="num-box">
+                                </div>
+                            </div>
+
+                            <div class="conv-result-card">
+                                <span>Sensibilidade correspondente no VALORANT:</span>
+                                <div class="converted-val" id="convResultVal">0.40</div>
+                                <button id="btnApplyConvertedSens" class="btn-secondary">Aplicar esta Sensibilidade</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button id="btnResetDefaults" class="btn-outline">Restaurar Padrões</button>
+                    <button id="btnSaveSettings" class="btn-primary">Salvar & Aplicar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DE HISTÓRICO DE TREINOS COM RECORDES E GRÁFICO -->
+        <div id="historyModal" class="modal-overlay hidden">
+            <div class="modal-card history-card">
+                <div class="settings-modal-header">
+                    <div class="history-title-wrap">
+                        <span class="results-tag">EVOLUÇÃO & ESTATÍSTICAS</span>
+                        <h2>HISTÓRICO & RECORDES</h2>
+                    </div>
+                    <button id="btnCloseHistory" class="btn-close">&times;</button>
+                </div>
+                
+                <div class="history-content">
+                    <!-- Cards de Resumo: Melhor Recorde e Médias -->
+                    <div class="history-summary-grid">
+                        <!-- Card 1: Melhor Recorde (High Score) -->
+                        <div class="summary-card best-record-card">
+                            <div class="sum-badge">
+                                <span class="badge-icon">👑</span> MELHOR RECORDE
+                            </div>
+                            <div class="sum-val highlight-yellow" id="histBestScore">0</div>
+                            <div class="sum-label">Pontos Máximos</div>
+                            <div class="sum-footer">
+                                <span>Precisão: <strong class="highlight-cyan" id="histBestAcc">0%</strong></span>
+                                <span>Patente: <strong class="highlight-red" id="histBestRank">--</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Média dos Recordes / Sessões -->
+                        <div class="summary-card avg-record-card">
+                            <div class="sum-badge">
+                                <span class="badge-icon">📊</span> MÉDIA GERAL
+                            </div>
+                            <div class="sum-val highlight-cyan" id="histAvgScore">0</div>
+                            <div class="sum-label">Pontuação Média</div>
+                            <div class="sum-footer">
+                                <span>Média de Acerto: <strong class="green" id="histAvgAcc">0%</strong></span>
+                                <span>Reação: <strong id="histAvgReaction">--</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Total de Treinos -->
+                        <div class="summary-card total-trainings-card">
+                            <div class="sum-badge">
+                                <span class="badge-icon">🎯</span> TOTAL DE TREINOS
+                            </div>
+                            <div class="sum-val" id="histTotalSessions">0</div>
+                            <div class="sum-label">Sessões Realizadas</div>
+                            <div class="sum-footer">
+                                <span>Consistência: <strong id="histConsistencyText">Iniciando</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção do Gráfico de Evolução -->
+                    <div class="chart-section" id="chartSection">
+                        <div class="chart-header">
+                            <div class="chart-title-box">
+                                <h3>GRÁFICO DE EVOLUÇÃO</h3>
+                                <p class="chart-subtext">Acompanhe seu desempenho sessão a sessão com linha de média e marco do melhor recorde.</p>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="btn-chart-toggle active" data-chart="score">Pontuação</button>
+                                <button class="btn-chart-toggle" data-chart="accuracy">Taxa de Acerto (%)</button>
+                            </div>
+                        </div>
+
+                        <div class="chart-wrapper">
+                            <canvas id="historyChartCanvas" height="200"></canvas>
+                        </div>
+
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot cyan"></span>
+                                <span>Sessões de Treino</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-line-dashed yellow"></span>
+                                <span>Média dos Recordes</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-star gold">★</span>
+                                <span>Ponto do Melhor Recorde</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Sessões Recentes -->
+                    <div class="history-list-section">
+                        <div class="history-section-header">
+                            <span>REGISTRO DETALHADO DAS SESSÕES</span>
+                        </div>
+                        <div id="historyList" class="history-list">
+                            <!-- Itens do histórico inseridos via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button id="btnClearHistory" class="btn-danger-outline">Limpar Histórico</button>
+                    <button id="btnCloseHistoryBottom" class="btn-secondary">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts da Aplicação -->
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
