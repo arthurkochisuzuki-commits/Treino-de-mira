@@ -222,7 +222,7 @@
                     <span class="session-mode-badge" id="resModeBadge">GRIDSHOT (FLICK) - 30s</span>
                 </div>
 
-                <!-- Destaque Principal: Taxa de Acerto e Patente -->
+                <!-- Destaque Principal: Taxa de Acerto e Pontuação -->
                 <div class="results-hero-grid">
                     <!-- Taxa de Acerto -->
                     <div class="hero-stat-card accuracy-card">
@@ -233,13 +233,13 @@
                         <div class="accuracy-status" id="resAccuracyStatus">Consistência Excepcional</div>
                     </div>
 
-                    <!-- Patente / Avaliação Valorant -->
-                    <div class="hero-stat-card rank-card">
-                        <span class="stat-subtitle">CLASSIFICAÇÃO ESTIMADA</span>
-                        <div class="rank-badge-display" id="resRankBadge">
-                            <span class="rank-name" id="resRankName">DIAMANTE II</span>
+                    <!-- Pontuação Final -->
+                    <div class="hero-stat-card score-hero-card">
+                        <span class="stat-subtitle">PONTUAÇÃO TOTAL</span>
+                        <div class="stat-huge-value">
+                            <span id="resFinalScore">0</span><small>pts</small>
                         </div>
-                        <div class="rank-description" id="resRankDesc">Excelente tempo de resposta e bom aproveitamento de tiros.</div>
+                        <div class="score-status" id="resScoreStatus">Pontos acumulados na sessão</div>
                     </div>
                 </div>
 
@@ -268,10 +268,6 @@
                     <div class="metric-item">
                         <span class="m-label">Maior Sequência (Streak)</span>
                         <span class="m-value highlight-cyan" id="resBestStreak">0x</span>
-                    </div>
-                    <div class="metric-item">
-                        <span class="m-label">Pontuação Total</span>
-                        <span class="m-value highlight-yellow" id="resFinalScore">0</span>
                     </div>
                 </div>
 
@@ -538,7 +534,7 @@
                             <div class="sum-label">Pontos Máximos</div>
                             <div class="sum-footer">
                                 <span>Precisão: <strong class="highlight-cyan" id="histBestAcc">0%</strong></span>
-                                <span>Patente: <strong class="highlight-red" id="histBestRank">--</strong></span>
+                                <span>Acertos: <strong class="highlight-red" id="histBestHits">0</strong></span>
                             </div>
                         </div>
 

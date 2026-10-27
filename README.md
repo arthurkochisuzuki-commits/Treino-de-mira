@@ -32,7 +32,7 @@ Não é necessário instalar nenhum programa ou dependência! O jogo roda direta
 No botão **HISTÓRICO**, você tem acesso a uma central estatística completa:
 - **👑 Melhor Recorde (High Score):**
   - Destaque da sua pontuação máxima histórica.
-  - Taxa de acerto e patente alcançada na sua melhor sessão.
+  - Taxa de acerto e total de alvos acertados na sua melhor sessão.
 - **📊 Média Geral das Sessões:**
   - Média de pontuação acumulada.
   - Média da taxa de acerto (%) e tempo de reação (ms).
@@ -41,12 +41,12 @@ No botão **HISTÓRICO**, você tem acesso a uma central estatística completa:
   - **Linha tracejada de referência com a sua Média Geral**.
   - **Destaque dourado com estrela no ponto do Melhor Recorde** (`★ RECORDE`).
   - Alternador entre **Pontuação** e **Taxa de Acerto (%)**.
-- **Registro Detalhado das Sessões:** Lista completa com data, horário, alvos acertados, tempo de reação e patente.
+- **Registro Detalhado das Sessões:** Lista completa com data, horário, alvos acertados e tempo de reação.
 
 ### 3. Relatório Completo de Desempenho e Taxa de Acerto
 Assim que o cronômetro chega a zero, a análise exibe:
-- **Taxa de Acerto (%)**: Percentual exato de tiros que atingiram os alvos.
-- **Patente Estimada do Valorant**: Classificação do seu rendimento do **Ferro ao Radiante**, avaliando precisão e agilidade.
+- **Taxa de Acerto (%)**: Percentual exato de tiros que atingiram os alvos com avaliação de precisão.
+- **Pontuação Total**: Pontuação final acumulada com multiplicadores de sequência.
 - **Métricas Detalhadas**:
   - Alvos acertados
   - Tiros errados (*Whiffs*)
@@ -54,8 +54,7 @@ Assim que o cronômetro chega a zero, a análise exibe:
   - **Tempo médio de reação em milissegundos (ms)**
   - Tiros por segundo (DPS)
   - Maior sequência de acertos (*Streak*)
-  - Pontuação final
-- **Dicas do Treinador**: Recomendações automáticas com base nos seus erros e acertos para subir de elo no Valorant.
+- **Dicas do Treinador**: Recomendações automáticas com base nos seus erros e acertos para subir de rendimento no Valorant.
 
 ### 4. Área de Configurações de Sensibilidade (Baseada no Valorant)
 - **Fórmula Idêntica ao Valorant**: Utiliza a taxa de rotação padrão do motor do Valorant (`m_yaw = 0.07` graus por contagem do mouse) e campo de visão horizontal de 103°.

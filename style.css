@@ -900,36 +900,29 @@ body::before {
     margin-top: 6px;
 }
 
-/* RANK CARD */
-.rank-card {
-    border-color: rgba(255, 70, 85, 0.35);
-    background: radial-gradient(circle at 50% 50%, rgba(255, 70, 85, 0.1) 0%, rgba(15, 25, 35, 0.8) 100%);
+/* SCORE HERO CARD */
+.score-hero-card {
+    border-color: rgba(244, 208, 63, 0.35);
+    background: radial-gradient(circle at 50% 50%, rgba(244, 208, 63, 0.1) 0%, rgba(15, 25, 35, 0.8) 100%);
 }
 
-.rank-badge-display {
-    margin: 10px 0;
+.score-hero-card .stat-huge-value {
+    color: var(--val-yellow);
+    text-shadow: 0 0 20px rgba(244, 208, 63, 0.4);
 }
 
-.rank-name {
-    font-family: var(--font-heading);
-    font-size: 44px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    color: var(--val-red);
-    text-shadow: 0 0 15px rgba(255, 70, 85, 0.5);
-}
-
-.rank-description {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.4;
-    max-width: 280px;
+.score-status {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-top: 6px;
 }
 
 /* DETAILED METRICS GRID */
 .results-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 24px;
 }

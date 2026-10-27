@@ -874,68 +874,18 @@ function finishTrainingSession() {
 }
 
 // -------------------------------------------------------------
-// RELATÓRIO DE ANÁLISE DE PRECISÃO & CLASSIFICAÇÃO VALORANT
+// RELATÓRIO DE ANÁLISE DE PRECISÃO & DESEMPENHO
 // -------------------------------------------------------------
 
-function calculateValorantRank(accuracy, avgReaction) {
-    // Classificação inteligente inspirada nos elos do Valorant
-    if (accuracy >= 95 && avgReaction > 0 && avgReaction <= 320) {
-        return {
-            name: 'RADIANTE',
-            badgeClass: 'rank-radiant',
-            desc: 'Reflexos de nível mundial e precisão cirúrgica de Vandal. Memória muscular no ápice!',
-            status: 'Precisão Impecável (Radiante)'
-        };
-    } else if (accuracy >= 90 && avgReaction <= 380) {
-        return {
-            name: 'IMORTAL III',
-            badgeClass: 'rank-immortal',
-            desc: 'Consistência incrível. Quase nenhum tiro desperdiçado, excelente micro-ajuste.',
-            status: 'Precisão Excelente'
-        };
-    } else if (accuracy >= 84) {
-        return {
-            name: 'ASCENDENTE',
-            badgeClass: 'rank-ascendant',
-            desc: 'Mira muito acima da média. Mantendo esse ritmo você domina qualquer lobby ranqueado.',
-            status: 'Alto Rendimento'
-        };
-    } else if (accuracy >= 76) {
-        return {
-            name: 'DIAMANTE',
-            badgeClass: 'rank-diamond',
-            desc: 'Bom aproveitamento de tiros e firmeza de crosshair placement.',
-            status: 'Consistente'
-        };
-    } else if (accuracy >= 68) {
-        return {
-            name: 'PLATINA',
-            badgeClass: 'rank-platinum',
-            desc: 'Boa agilidade! Com foco em controlar o primeiro clique, você subirá rápido.',
-            status: 'Bom Nível'
-        };
-    } else if (accuracy >= 58) {
-        return {
-            name: 'OURO',
-            badgeClass: 'rank-gold',
-            desc: 'Taxa razoável. Tente diminuir ligeiramente a velocidade para garantir o acerto.',
-            status: 'Em Desenvolvimento'
-        };
-    } else if (accuracy >= 45) {
-        return {
-            name: 'PRATA',
-            badgeClass: 'rank-silver',
-            desc: 'Muitos tiros no vazio antes de alinhar no alvo. Treine respirar antes do clique.',
-            status: 'Calibrando'
-        };
-    } else {
-        return {
-            name: 'BRONZE / FERRO',
-            badgeClass: 'rank-bronze',
-            desc: 'Ajuste sua sensibilidade no menu para encontrar a velocidade certa para seu braço/pulso.',
-            status: 'Precisa de Calibração'
-        };
-    }
+function getAccuracyStatus(accuracy) {
+    if (accuracy >= 95) return 'Precisão Impecável';
+    if (accuracy >= 90) return 'Precisão Excelente';
+    if (accuracy >= 84) return 'Alto Rendimento';
+    if (accuracy >= 76) return 'Consistente';
+    if (accuracy >= 68) return 'Bom Nível';
+    if (accuracy >= 58) return 'Em Desenvolvimento';
+    if (accuracy >= 45) return 'Calibrando';
+    return 'Precisa de Calibração';
 }
 
 function generateCoachTip(accuracy, avgReaction, misses) {
@@ -963,30 +913,48 @@ function showResultsAnalysis() {
     const sessionDuration = state.selectedTime === 'custom' ? Number(state.customTime) : Number(state.selectedTime);
     const shotsPerSec = sessionDuration > 0 ? (state.totalShots / sessionDuration).toFixed(1) : 0;
 
-    const rankInfo = calculateValorantRank(accuracy, avgReaction);
+    const accuracyStatus = getAccuracyStatus(accuracy);
     const coachTip = generateCoachTip(accuracy, avgReaction, state.misses);
 
     // Atualização dos elementos no Modal de Resultados
-    document.getElementById('resAccuracy').textContent = accuracy.toFixed(1);
-    document.getElementById('resAccuracyStatus').textContent = rankInfo.status;
-    document.getElementById('resRankName').textContent = rankInfo.name;
-    document.getElementById('resRankDesc').textContent = rankInfo.desc;
+    const resAcc = document.getElementById('resAccuracy');
+    const resAccStatus = document.getElementById('resAccuracyStatus');
+    const resFinalScore = document.getElementById('resFinalScore');
+    const resScoreStatus = document.getElementById('resScoreStatus');
 
-    document.getElementById('resHits').textContent = state.hits;
-    document.getElementById('resMisses').textContent = state.misses;
-    document.getElementById('resTotalShots').textContent = state.totalShots;
-    document.getElementById('resAvgReaction').textContent = avgReaction > 0 ? `${avgReaction} ms` : '--';
-    document.getElementById('resShotsPerSec').textContent = shotsPerSec;
-    document.getElementById('resBestStreak').textContent = `${state.bestStreak}x`;
-    document.getElementById('resFinalScore').textContent = state.score;
-    document.getElementById('resCoachTip').textContent = coachTip;
+    if (resAcc) resAcc.textContent = accuracy.toFixed(1);
+    if (resAccStatus) resAccStatus.textContent = accuracyStatus;
+    if (resFinalScore) resFinalScore.textContent = state.score.toLocaleString('pt-BR');
+    if (resScoreStatus) {
+        if (state.score >= 5000) resScoreStatus.textContent = 'Desempenho Extraordinário';
+        else if (state.score >= 3000) resScoreStatus.textContent = 'Alto Aproveitamento';
+        else if (state.score >= 1500) resScoreStatus.textContent = 'Bom Rendimento';
+        else resScoreStatus.textContent = 'Pontos acumulados na sessão';
+    }
+
+    const resHits = document.getElementById('resHits');
+    const resMisses = document.getElementById('resMisses');
+    const resTotalShots = document.getElementById('resTotalShots');
+    const resAvgReaction = document.getElementById('resAvgReaction');
+    const resShotsPerSec = document.getElementById('resShotsPerSec');
+    const resBestStreak = document.getElementById('resBestStreak');
+    const resCoachTip = document.getElementById('resCoachTip');
+    const resModeBadge = document.getElementById('resModeBadge');
+
+    if (resHits) resHits.textContent = state.hits;
+    if (resMisses) resMisses.textContent = state.misses;
+    if (resTotalShots) resTotalShots.textContent = state.totalShots;
+    if (resAvgReaction) resAvgReaction.textContent = avgReaction > 0 ? `${avgReaction} ms` : '--';
+    if (resShotsPerSec) resShotsPerSec.textContent = shotsPerSec;
+    if (resBestStreak) resBestStreak.textContent = `${state.bestStreak}x`;
+    if (resCoachTip) resCoachTip.textContent = coachTip;
 
     const modeLabels = {
         gridshot: 'GRIDSHOT (FLICK)',
         spidershot: 'MICRO-ADJUST',
         tracking: 'RASTREIO (TRACKING)'
     };
-    document.getElementById('resModeBadge').textContent = `${modeLabels[state.selectedMode] || 'TREINO'} - ${sessionDuration}s`;
+    if (resModeBadge) resModeBadge.textContent = `${modeLabels[state.selectedMode] || 'TREINO'} - ${sessionDuration}s`;
 
     // Salva no histórico
     saveHistorySession({
@@ -997,8 +965,8 @@ function showResultsAnalysis() {
         hits: state.hits,
         totalShots: state.totalShots,
         avgReaction,
-        rank: rankInfo.name,
-        score: state.score
+        score: state.score,
+        bestStreak: state.bestStreak
     });
 
     modal.classList.remove('hidden');
@@ -1019,7 +987,7 @@ function renderHistory() {
     // Elementos de Resumo
     const bestScoreEl = document.getElementById('histBestScore');
     const bestAccEl = document.getElementById('histBestAcc');
-    const bestRankEl = document.getElementById('histBestRank');
+    const bestHitsEl = document.getElementById('histBestHits');
     const avgScoreEl = document.getElementById('histAvgScore');
     const avgAccEl = document.getElementById('histAvgAcc');
     const avgReactionEl = document.getElementById('histAvgReaction');
@@ -1029,7 +997,7 @@ function renderHistory() {
     if (count === 0) {
         if (bestScoreEl) bestScoreEl.textContent = '0';
         if (bestAccEl) bestAccEl.textContent = '0%';
-        if (bestRankEl) bestRankEl.textContent = '--';
+        if (bestHitsEl) bestHitsEl.textContent = '0';
         if (avgScoreEl) avgScoreEl.textContent = '0';
         if (avgAccEl) avgAccEl.textContent = '0%';
         if (avgReactionEl) avgReactionEl.textContent = '--';
@@ -1072,7 +1040,7 @@ function renderHistory() {
     // Atualiza Cards de Resumo
     if (bestScoreEl) bestScoreEl.textContent = bestSession.score.toLocaleString('pt-BR');
     if (bestAccEl) bestAccEl.textContent = `${bestSession.accuracy}%`;
-    if (bestRankEl) bestRankEl.textContent = bestSession.rank || '--';
+    if (bestHitsEl) bestHitsEl.textContent = bestSession.hits || 0;
 
     if (avgScoreEl) avgScoreEl.textContent = avgScore.toLocaleString('pt-BR');
     if (avgAccEl) avgAccEl.textContent = `${avgAccuracy}%`;
@@ -1104,7 +1072,6 @@ function renderHistory() {
                 <div class="hist-right">
                     <span class="hist-score">${item.score} pts</span>
                     <span class="hist-acc">${item.accuracy}%</span>
-                    <span class="hist-rank">${item.rank}</span>
                 </div>
             </div>
         `;
